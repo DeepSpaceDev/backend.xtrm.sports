@@ -343,7 +343,6 @@
         </paper-datatable-column>
       </paper-datatable>
     </paper-datatable-card>
-    <iframe src="https://medium.com/xtrm-sports"></iframe>
     <paper-toast id="successToast" text="Successfully stored in the database."></paper-toast>
   </template>
   <script>
@@ -402,7 +401,7 @@
       },
 
       attached: function() {
-        fetch("http://api.deepspace.onl/xtrm-sports/list/all").then(result => {
+        fetch("http://api.xtrm-sports.com/list/all").then(result => {
           return result.json();
         }).then(json => {
           this.data = json;
@@ -432,7 +431,7 @@
           value: value
         };
 
-        fetch("http://api.deepspace.onl/xtrm-sports/update/", {
+        fetch("http://api.xtrm-sports.com/update/", {
           method: 'POST',
           headers: { "Content-Type" : "application/json" },
           body: JSON.stringify(body)
@@ -479,7 +478,7 @@
           skiing_ascent_type: this.$.skiing_ascent_type.value
         };
 
-        fetch("http://api.deepspace.onl/xtrm-sports/insert/", {
+        fetch("http://api.xtrm-sports.com/insert/", {
           method: 'POST',
           headers: { "Content-Type" : "application/json" },
           body: JSON.stringify(row)
