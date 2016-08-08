@@ -1,0 +1,131 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/google-map/google-map.html">
+<link rel="import" href="../../bower_components/google-map/google-map-marker.html">
+<link rel="import" href="../../bower_components/google-map/google-map-search.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<!--
+To be put into a paper-datatable column
+
+Example:
+  <paper-datatable-column>
+    <template>
+      <xtrm-location-input location="[[value]]"></xtrm-location-input>
+    </template>
+  </paper-datatable-column>
+-->
+<dom-module id="xtrm-location-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: #757575;
+        position: absolute;
+        top: 3px;
+        right: 4px;
+        z-index: 1;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+    </style>
+    <!-- TODO: Insert map search types @link{https://developers.google.com/places/documentation/supported_types} -->
+    <google-map-search map="[[map]]" query="[[query]]" results="{{results}}" 
+                       latitude="[[location.lat]]" longitude="[[location.lng]]">
+    </google-map-search>
+    <paper-input value="{{query}}" label="Location"></paper-input>
+    <template is="dom-repeat" items={{results}} as="result" filter="filterLocations">
+      <paper-item on-tap="_changeLocation">[[result.formatted_address]]</paper-item>
+    </template>
+    <span>
+      <!-- starts with paper-icon-buttton -->
+      <paper-icon-button icon="save" on-tap="save"></paper-icon-button>
+      <!-- between paper-icon-buttton and google-map -->
+      <google-map map="{{map}}" latitude="[[location.lat]]" longitude="[[location.lng]]" 
+                  style="height:300px;margin:20px 0px;" zoom="7" click-events>
+        <google-map-marker latitude="{{location.lat}}" longitude="{{location.lng}}" draggable="true"></google-map-marker>
+      </google-map>
+      <!-- ends with google-map -->
+    </span>
+  </template>
+  <script>
+    Polymer({
+      is: 'xtrm-location-input',
+
+      properties: {
+        location: {
+          type: Object
+        },
+        results: Array
+      },
+
+      listeners: {'google-map-click': '_onMapClick'},
+
+      get value() {
+        return this.location;
+      },
+
+      save: function(e) {
+        var template = this.dataHost;
+
+        var index = template._dataKey.substr(1);
+        var item = template.__data__.item;
+        var id = item.id;
+        var column = template.__data__.column.property;
+        var value = {
+          lat: this.location.lat,
+          lng: this.location.lng
+        };
+
+        /**
+         * Fired when user wants the value updated in the data base.
+         *
+         * @event update-data
+         * @param {number} id The id of the location.
+         * @param {string} column The column name of the changed value.
+         * @param {object} value The changed value.
+         * @param {number} index The index in the list of paper-datatable.
+         */
+        this.fire('update-data', {
+          id: id,
+          column: column,
+          value: value,
+          index: index
+        });
+      },
+
+      _onMapClick: function(e) {
+        var lat = e.detail.latLng.lat();
+        var lng = e.detail.latLng.lng();
+        this.setMarker(lat, lng);
+      },
+
+      _changeLocation: function(e) {
+        var data = e.model.__data__;
+        this.setMarker(data.result.latitude, data.result.longitude);
+      },
+
+      setMarker: function(lat, lng) {
+        var value = {
+          lat: lat,
+          lng: lng
+        };
+        this.set('location', value);
+      },
+
+      filterLocations: function(value) {
+        var index = this.results.indexOf(value);
+        return index < 3;
+      }
+
+    });
+  </script>
+</dom-module>

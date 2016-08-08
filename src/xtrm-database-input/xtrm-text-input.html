@@ -1,0 +1,70 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<!--
+To be put into a paper-datatable column
+
+Example:
+  <paper-datatable-column>
+    <template>
+      <xtrm-text-input value="[[value]]"></xtrm-text-input>
+    </template>
+  </paper-datatable-column>
+-->
+<dom-module id="xtrm-text-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: #757575;
+        position: absolute;
+        top: 3px;
+        right: 4px;
+        z-index: 1;
+      }
+    </style>
+    <paper-icon-button icon="save" on-tap="save"></paper-icon-button>
+    <paper-textarea value="{{value}}" no-label-float></paper-textarea>
+  </template>
+  <script>
+    Polymer({
+      is: 'xtrm-text-input',
+
+      properties: {
+        value: String
+      },
+
+      save: function(e) {
+        var template = this.dataHost;
+
+        var index = template._dataKey.substr(1);
+        var item = template.__data__.item;
+        var id = item.id;
+        var column = template.__data__.column.property;
+        var value = this.value;
+
+        /**
+         * Fired when user wants the value updated in the data base.
+         *
+         * @event update-data
+         * @param {number} id The id of the location.
+         * @param {string} column The column name of the changed value.
+         * @param {string} value The changed value.
+         * @param {number} index The index in the list of paper-datatable.
+         */
+        this.fire('update-data', {
+          id: id,
+          column: column,
+          value: value,
+          index: index
+        });
+      }
+    });
+  </script>
+</dom-module>

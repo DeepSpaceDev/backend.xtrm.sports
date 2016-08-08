@@ -1,0 +1,101 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<!--
+To be put into a paper-datatable column
+
+Example:
+  <paper-datatable-column>
+    <template>
+      <xtrm-array-input array="[[value]]"></xtrm-array-input>
+    </template>
+  </paper-datatable-column>
+-->
+<dom-module id="xtrm-array-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: #757575;
+        position: absolute;
+        top: 3px;
+        right: 4px;
+        z-index: 1;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+    </style>
+    <paper-icon-button icon="save" on-tap="save"></paper-icon-button>
+    <template is="dom-repeat" items="{{array}}">
+      <paper-input class="item" no-label-float value="[[item]]"></paper-input>
+    </template>
+    <paper-item on-tap="addItem">ADD ITEM</paper-item>
+  </template>
+  <script>
+    Polymer({
+      is: 'xtrm-array-input',
+
+      properties: {
+        array: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+
+      get value() {
+        return this.getArray();
+      },
+
+      save: function(e) {
+        var template = this.dataHost;
+
+        var index = template._dataKey.substr(1);
+        var item = template.__data__.item;
+        var id = item.id;
+        var column = template.__data__.column.property;
+        var value = this.getArray();
+
+        /**
+         * Fired when user wants the value updated in the data base.
+         *
+         * @event update-data
+         * @param {number} id The id of the location.
+         * @param {string} column The column name of the changed value.
+         * @param {arry} value The changed array.
+         * @param {number} index The index in the list of paper-datatable.
+         */
+        this.fire('update-data', {
+          id: id,
+          column: column,
+          value: value,
+          index: index
+        });
+      },
+
+      addItem: function() {
+        this.push('array', '');
+      },
+
+      getArray: function() {
+        var array = [];
+        var inputs = this.querySelectorAll('paper-input.item');
+        for (var i = 0; i < inputs.length; i++) {
+          var input = inputs[i].value.trim();
+          if (input.length !== 0) {
+            array.push(input);
+          }
+        }
+        return array;
+      }
+    });
+  </script>
+</dom-module>

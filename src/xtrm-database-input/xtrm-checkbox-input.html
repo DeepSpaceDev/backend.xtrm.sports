@@ -1,0 +1,74 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<!--
+To be put into a paper-datatable column
+
+Example:
+  <paper-datatable-column>
+    <template>
+      <xtrm-checkbox-input checked="[[value]]"></xtrm-checkbox-input>
+    </template>
+  </paper-datatable-column>
+-->
+<dom-module id="xtrm-checkbox-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: #757575;
+        position: absolute;
+        top: 3px;
+        right: 4px;
+        z-index: 1;
+      }
+      paper-checkbox {
+        position: absolute;
+        top: 12px;
+      }
+    </style>
+    <paper-icon-button icon="save" on-tap="save"></paper-icon-button>
+    <paper-checkbox id="text" checked="{{checked}}"></paper-checkbox>
+  </template>
+  <script>
+    Polymer({
+      is: 'xtrm-checkbox-input',
+
+      properties: {
+        checked: Boolean
+      },
+
+      save: function(e) {
+        var template = this.dataHost;
+
+        var index = template._dataKey.substr(1);
+        var item = template.__data__.item;
+        var id = item.id;
+        var column = template.__data__.column.property;
+        var value = this.checked;
+
+        /**
+         * Fired when user wants the value updated in the data base.
+         *
+         * @event update-data
+         * @param {number} id The id of the location.
+         * @param {string} column The column name of the changed value.
+         * @param {boolean} value The changed value.
+         * @param {number} index The index in the list of paper-datatable.
+         */
+        this.fire('update-data', {
+          id: id,
+          column: column,
+          value: value,
+          index: index
+        });
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,26 @@
+{
+  "name": "xtrm-sports",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-datatable": "^0.9.8",
+    "paper-dropdown-menu": "^1.3.2",
+    "paper-menu": "^1.2.2",
+    "paper-progress": "^1.0.9",
+    "paper-dialog": "^1.1.0",
+    "paper-dialog-scrollable": "^1.1.5",
+    "paper-toast": "^1.3.0",
+    "google-map": "^1.1.10",
+    "file-upload": "^1.7.5"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "resolutions": {
+    "polymer": "^1.5.0",
+    "paper-styles": "^1.1.0"
+  }
+}

@@ -1,0 +1,220 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/file-upload/file-upload.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<!--
+To be put into a paper-datatable column
+
+Example:
+  <paper-datatable-column>
+    <template>
+      <xtrm-image-input images="[[value]]"></xtrm-image-input>
+    </template>
+  </paper-datatable-column>
+-->
+<dom-module id="xtrm-image-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      img.small {
+        height: 40px;
+      }
+      paper-icon-button {
+        float: right;
+        color: #757575;
+      }
+      paper-dialog {
+        text-align: center;
+      }
+      a {
+        color: black;
+        text-decoration: none;
+      }
+    </style>
+    <template is="dom-if" if={{_multi}}>
+      <template is="dom-repeat" items="{{images}}" as="url">
+        <img class="small" src="[[url]]" on-tap="_imageClicked">
+      </template>
+    </template>
+    <template is="dom-if" if={{!_multi}}>
+      <img class="small" src="[[image]]" on-tap="_imageClicked">
+    </template>
+
+    <paper-icon-button icon="[[_icon]]" on-tap="add"></paper-icon-button>
+    <paper-dialog id="deleteImageDialog">
+      <h2><a href="[[_imageURL]]" target="_blank">[[_imageURL]]</a></h2>
+      <img src="[[_imageURL]]">
+      <div class="buttons">
+        <paper-button on-tap="delete">Delete</paper-button>
+        <paper-button>Keep</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="addImageDialog">
+      <h2>Add a image</h2>
+      <file-upload 
+        accept="image/*"
+        droppable
+        drop-text="Drop Images Here"
+        error-text="ERROR uploading image"
+        method="POST"
+        target="http://api.deepspace.onl:5555/upload"
+        on-error="_imageUploadError"
+        on-success="_imageUploaded">Choose File</file-upload>
+      <div class="buttons">
+        <paper-button>Add</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    var UPLOAD_ICON = 'file-upload';
+    var EDIT_ICON = 'create';
+
+    Polymer({
+      is: 'xtrm-image-input',
+
+      properties: {
+        images: {
+          type: Array,
+          value: null
+        },
+        image: {
+          type: String,
+          value: null
+        },
+        _multi: {
+          type: Boolean,
+          computed: '_computeMulti(images, image)',
+          observer: '_multiChanged'
+        },
+        _icon: {
+          type: String,
+          value: UPLOAD_ICON
+        }
+      },
+
+      add: function(e) {
+        this.$.addImageDialog.open();
+      },
+
+      get value() {
+        if (this._multi)
+          return this.images;
+        else
+          return this.image;
+      },
+
+      delete: function() {
+        var template = this.dataHost;
+
+        var index = template._dataKey.substr(1);
+        var item = template.__data__.item;
+        var id = item.id;
+        var column = template.__data__.column.property;
+        var value;
+        if (this._multi) {
+          var deleteImageIndex = this.images.indexOf(this._imageURL);
+          this.splice('images', deleteImageIndex, 1);
+          value = this.images;
+        } else {
+          this.image = '';
+          value = this.image;
+        }
+
+        /**
+         * Fired when user wants the value updated in the data base.
+         *
+         * @event update-data
+         * @param {number} id The id of the location.
+         * @param {string} column The column name of the changed value.
+         * @param {array} value The changed array.
+         * @param {number} index The index in the list of paper-datatable.
+         */
+        this.fire('update-data', {
+          id: id,
+          column: column,
+          value: value,
+          index: index
+        });
+      },
+
+      _computeMulti: function(images, image) {
+        if (images && !image) return true;
+        if (!images && image) return false;
+        if (images && image) {
+          console.warn('Only one property `images` or `image` should be set!');
+          return true;
+        }
+        return true;
+      },
+
+      _multiChanged: function(multi) {
+        if (multi) {
+          this._icon = UPLOAD_ICON;
+        } else {
+          this._icon = EDIT_ICON;
+        }
+      },
+
+      _imageClicked: function(e) {
+        if (this._multi) {
+          var url = e.target._templateInstance.__data__.url;
+          this._imageURL = url;
+        } else {
+          this._imageURL = this.image;
+        }
+        this.$.deleteImageDialog.open();
+      },
+
+      _imageUploaded: function(e) {
+        console.log(e);
+        var response = JSON.parse(e.detail.xhr.response);
+        if (response.success) {
+          if (this._multi) {
+            this.push('images', response.url);
+          } else {
+            this.image = response.url;
+          }
+
+          var template = this.dataHost;
+
+          var index = template._dataKey.substr(1);
+          var item = template.__data__.item;
+          var id = item.id;
+          var column = template.__data__.column.property;
+          var value;
+          if (this._multi) {
+            value = this.images;
+          } else {
+            value = this.image;
+          }
+
+          /**
+           * Fired when user wants the value updated in the data base.
+           *
+           * @event update-data
+           * @param {number} id The id of the location.
+           * @param {string} column The column name of the changed value.
+           * @param {array} value The changed array.
+           * @param {number} index The index in the list of paper-datatable.
+           */
+          this.fire('update-data', {
+            id: id,
+            column: column,
+            value: value,
+            index: index
+          });
+        }
+      },
+
+      _imageUploadError: function(e) {
+        console.log(e);
+      }
+    });
+  </script>
+</dom-module>

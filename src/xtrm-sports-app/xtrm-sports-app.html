@@ -1,0 +1,500 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-datatable/paper-datatable.html">
+<link rel="import" href="../../bower_components/paper-datatable/paper-datatable-card.html">
+<link rel="import" href="../../bower_components/paper-datatable/paper-datatable-column.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<link rel="import" href="../xtrm-database-input/xtrm-location-input.html">
+<link rel="import" href="../xtrm-database-input/xtrm-checkbox-input.html">
+<link rel="import" href="../xtrm-database-input/xtrm-text-input.html">
+<link rel="import" href="../xtrm-database-input/xtrm-number-input.html">
+<link rel="import" href="../xtrm-database-input/xtrm-image-input.html">
+<link rel="import" href="../xtrm-database-input/xtrm-array-input.html">
+
+<dom-module id="xtrm-sports-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-dialog-scrollable {
+        padding: 16px;
+        min-width: 600px;
+      }
+    </style>
+    <paper-dialog id="addRowDialog">
+      <h2>Add row</h2>
+      <paper-dialog-scrollable>
+        <paper-input id="name_en" label="Name (EN)"></paper-input>
+        <paper-input id="name_de" label="Name (DE)"></paper-input>
+        <paper-input id="description_en" label="Description (EN)"></paper-input>
+        <paper-input id="description_de" label="Description (DE)"></paper-input>
+        <h4>Pictures</h4>
+        <xtrm-image-input images="[]"></xtrm-image-input>
+        <paper-input id="sport" label="Sport"></paper-input>
+        <paper-input id="discipline" label="Discipline"></paper-input>
+        <paper-input id="continent" label="Continent"></paper-input>
+        <paper-input id="country" label="Country"></paper-input>
+        <paper-input id="region" label="Region"></paper-input>
+        <h4>Location</h4>
+        <xtrm-location-input id="location"></xtrm-location-input>
+        <h4>Location (parking)</h4>
+        <xtrm-location-input id="location_parking"></xtrm-location-input>
+        <paper-input id="altitude_top" label="Altitude Top" type="Number"></paper-input>
+        <paper-input id="altitude_bottom" label="Alitude Bottom" type="Number"></paper-input>
+        <paper-input id="suitability" label="Suitablity" type="Number"></paper-input>
+        <paper-checkbox id="families">Families</paper-checkbox>
+        <paper-checkbox id="groups">Groups</paper-checkbox>
+        <h4>Topo</h4>
+        <xtrm-image-input image=""></xtrm-image-input>
+        <h4>Climbing: route difficulties</h4>
+        <xtrm-array-input id="climbing_route_difficulties"></xtrm-array-input>
+        <h4>Climbing: equipment</h4>
+        <xtrm-array-input id="climbing_equipment"></xtrm-array-input>
+        <paper-input id="climbing_maintenance" label="Climbing: maintenance" type="Number"></paper-input>
+        <label>
+          <h4>Skiing: ascent time</h4>
+          <input id="skiing_ascent_time" type="time">
+        </label>
+        <paper-input id="skiing_ascent_type" label="Skiing: ascent type"></paper-input>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button on-tap="addRow">Add</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-datatable-card>
+      <div toolbar-main>
+        <paper-button raised on-tap="_openAddRow">Add row</paper-button>
+      </div>
+      <paper-datatable 
+        id="datatable"
+        progress="[[loading]]">
+        <paper-datatable-column
+          header="ID"
+          property="id"
+          type="Number"
+          sortable>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Approved"
+          property="approved"
+          type="Boolean"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-checkbox-input checked="[[value]]"></xtrm-checkbox-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Name (EN)"
+          property="name_en"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="300px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Name (DE)"
+          property="name_de"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="300px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Description (EN)"
+          property="description_en"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="400px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Description (DE)"
+          property="description_de"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="400px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Pictures"
+          property="pictures"
+          type="Array"
+          editable
+          sortable
+          width="300px">
+          <template>
+            <xtrm-image-input images="[[value]]"></xtrm-image-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Sport"
+          property="sport"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="150px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Discipline"
+          property="discipline"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="150px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Continent"
+          property="continent"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="150px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Country"
+          property="country"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="150px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Region"
+          property="region"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="150px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Location"
+          property="location"
+          type="Object"
+          editable dialog
+          sortable format-value="{{formatLatLng}}"
+          cell-style="font-family:monospace;"
+          width="300px">
+          <template>
+            <xtrm-location-input location="[[value]]"></xtrm-location-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Location (Parking)"
+          property="location_parking"
+          type="Object"
+          editable dialog
+          sortable format-value="{{formatLatLng}}"
+          cell-style="font-family:monospace;"
+          width="300px">
+          <template>
+            <xtrm-location-input location="[[value]]"></xtrm-location-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Altitude top"
+          property="altitude_top"
+          type="Number"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-number-input value="[[value]]" step="1"></xtrm-number-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Altitude bottom"
+          property="altitude_bottom"
+          type="Number"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-number-input value="[[value]]" step="1"></xtrm-number-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Suitablity"
+          property="suitability"
+          type="Number"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-number-input value="[[value]]" step="1"></xtrm-number-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Familien"
+          property="families"
+          type="Boolean"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-checkbox-input checked="[[value]]"></xtrm-checkbox-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Groups"
+          property="groups"
+          type="Boolean"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-checkbox-input checked="[[value]]"></xtrm-checkbox-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Topo"
+          property="topo"
+          type="String"
+          editable
+          sortable
+          width="300px">
+          <template>
+            <xtrm-image-input image="[[value]]"></xtrm-image-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Climbing route difficulties"
+          property="climbing_route_difficulties"
+          type="Array"
+          editable dialog format-value="{{formatArray}}"
+          sortable
+          width="200px">
+          <template>
+            <xtrm-array-input array="[[value]]"></xtrm-array-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Climbing equipment"
+          property="climbing_equipment"
+          type="Array"
+          editable dialog format-value="{{formatArray}}"
+          sortable
+          width="250px">
+          <template>
+            <xtrm-array-input array="[[value]]"></xtrm-array-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Climbing maintenance"
+          property="climbing_maintenance"
+          type="Number"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-number-input value="[[value]]" step="1"></xtrm-number-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Skiing ascent time"
+          property="skiing_ascent_time"
+          type="String"
+          editable dialog
+          sortable>
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+        <paper-datatable-column
+          header="Skiing ascent type"
+          property="skiing_ascent_type"
+          type="String"
+          editable dialog format-value="{{clip}}" 
+          sortable
+          width="200px">
+          <template>
+            <xtrm-text-input value="[[value]]"></xtrm-text-input>
+          </template>
+        </paper-datatable-column>
+      </paper-datatable>
+    </paper-datatable-card>
+    <iframe src="https://medium.com/xtrm-sports"></iframe>
+    <paper-toast id="successToast" text="Successfully stored in the database."></paper-toast>
+  </template>
+  <script>
+    Polymer({
+
+      is: 'xtrm-sports-app',
+
+      properties: {
+        data: {
+          type: Array,
+          value: function() { return []; }
+        },
+        loading: {
+          type: Boolean,
+          value: true
+        },
+        clip: {
+          type: Function,
+          value: function() {
+            return function(value) {
+              var substr = value.substr(0, 40);
+              if(substr.length < 40) {
+                return substr;
+              } else {
+                return substr + '...';
+              }
+            }
+          }
+        },
+        formatLatLng: {
+          type: Function,
+          value: function() {
+            return function(value) {
+              var lat = (value.lat > 0 ? '&nbsp;': '') + (value.lat < 10 && value.lat > -10 ? '&nbsp;': '') + value.lat.toFixed(6);
+              var lng = (value.lng > 0 ? '&nbsp;': '') + (value.lng < 10 && value.lng > -10 ? '&nbsp;': '') + 
+                (value.lng < 100 && value.lng > -100 ? '&nbsp;': '') + value.lng.toFixed(6);
+              return lat + ' |' + lng;
+            }
+          }
+        },
+        formatArray: {
+          type: Function,
+          value: function() {
+            return function(value) {
+              var string = '';
+              if (value.length !== 0) {
+                for (var i = 0; i < value.length - 1; i++) {
+                  string += value[i] + ', ';
+                };
+                string += value[value.length - 1];  
+              }
+              return string;
+            }
+          }
+        }
+      },
+
+      attached: function() {
+        fetch("http://api.deepspace.onl/xtrm-sports/list/all").then(result => {
+          return result.json();
+        }).then(json => {
+          this.data = json;
+          this.loading = false;
+        });
+      },
+
+      observers: ['_dataChanged(data.*)'],
+
+      listeners: {
+        'update-data': 'updateData'
+      },
+
+      _dataChanged: function(changeRecord) {
+        this.$.datatable.reset();
+        this.$.datatable.data = this.data;
+      },
+
+      updateData: function(e, detail) {
+        var id = detail.id;
+        var column = detail.column;
+        var value = detail.value;
+        var index = detail.index;
+        var body = { 
+          id: id,
+          column: column,
+          value: value
+        };
+
+        fetch("http://api.deepspace.onl/xtrm-sports/update/", {
+          method: 'POST',
+          headers: { "Content-Type" : "application/json" },
+          body: JSON.stringify(body)
+        }).then(response => {
+          return response.json();
+        }).then(json => {
+          if (json.success) {
+            var row = this.data[index];
+            row[column] = value;
+            this.splice('data', index, 1, row);
+            this.$.successToast.open();
+          }
+        });
+      },
+
+      _openAddRow: function() {
+        this.$.addRowDialog.open();
+      },
+
+      addRow: function() {
+        var row = { 
+          name_en: this.$.name_en.value,
+          name_de: this.$.name_de.value,
+          description_en: this.$.description_en.value,
+          description_de: this.$.description_de.value,
+          pictures: this.$.pictures.value,
+          sport: this.$.sport.value,
+          discipline: this.$.sport.value,
+          continent: this.$.continent.value,
+          country: this.$.country.value,
+          region: this.$.region.value,
+          location: this.$.location.value,
+          location_parking: this.$.location_parking.value,
+          altitude_top: Number.parseInt(this.$.altitude_top.value),
+          altitude_bottom: Number.parseInt(this.$.altitude_bottom.value),
+          suitability: Number.parseInt(this.$.suitability.value),
+          families: false,
+          groups: true,
+          topo: this.$.topo.value,
+          climbing_route_difficulties: this.$.climbing_route_difficulties.value,
+          climbing_equipment: this.$.climbing_equipment.value,
+          climbing_maintenance: Number.parseInt(this.$.climbing_maintenance.value),
+          skiing_ascent_time: this.$.skiing_ascent_time.value,
+          skiing_ascent_type: this.$.skiing_ascent_type.value
+        };
+
+        fetch("http://api.deepspace.onl/xtrm-sports/insert/", {
+          method: 'POST',
+          headers: { "Content-Type" : "application/json" },
+          body: JSON.stringify(row)
+        }).then(response => {
+          return response.json();
+        }).then(json => {
+          console.log(json);
+          if (json.success) {
+            row.id = json.id;
+            this.push('data', row);
+            this.$.successToast.open();
+            this.$.addRowDialog.close();
+          }
+        });
+      }
+    });
+  </script>
+</dom-module>
